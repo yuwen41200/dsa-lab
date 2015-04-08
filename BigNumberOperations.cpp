@@ -34,7 +34,7 @@ BigInteger::BigInteger(int a) {
 	char cstr[12];
 	sprintf(cstr, "%d", a);
 	string str = cstr;
-	memset(number, 0, 100);
+	memset(number, 0, MAX_LENGTH);
 	positive = true;
 	int index = 0;
 	for (int i=str.length()-1; i>=0; --i) {
@@ -59,7 +59,7 @@ BigInteger::BigInteger(int a) {
 }
 
 BigInteger::BigInteger(string a) {
-	memset(number, 0, 100);
+	memset(number, 0, MAX_LENGTH);
 	positive = true;
 	int index = 0;
 	for (int i=a.length()-1; i>=0; --i) {
