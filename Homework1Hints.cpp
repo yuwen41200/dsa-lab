@@ -53,7 +53,7 @@ class BigInteger {
 		BigInteger operator-(BigInteger);
 		BigInteger operator*(BigInteger);
 		BigInteger operator/(BigInteger);
-		friend ostream& operator<<(ostream&, BigInteger&);
+		friend ostream& operator<<(ostream&, BigInteger&); // operator<<() 不能宣告為 BigInteger 的 member function
 };
 
 BigInteger::BigInteger() {
@@ -168,7 +168,7 @@ BigInteger BigInteger::operator*(BigInteger a) {
 
 /*
 	思路：模擬直式的乘法運算，先把被乘數和乘數都當作正數
-	p.s. 別想用累加的，雖然跟據定義 a*b 就是把 a 累加 b 次，但是這樣的效率極低
+	p.s. 別想用累加的，雖然根據定義 a*b 就是把 a 累加 b 次，但是這樣的效率極低
 	     保證 TLE (time limit exceed)，連你都等不下去……不信你可以試試
 */
 
@@ -278,7 +278,7 @@ int main() {
 	進階解法 - 最佳化（optimize）大數運算的演算法
 	i. number[] 的大小是 MAX_LENGTH，萬一長度超過 MAX_LENGTH 怎麼辦？
 		可以用動態記憶體配置（dynamic memory allocation）
-		也就是 int number = new int[length]，但是，當然，不太好寫
+		也就是 int* number = new int[length]，但是，當然，不太好寫
 	ii. 在整數陣列 number[] 裡，每個元素都可以存放一個 int 範圍的數字
 	但是我們卻只會拿來存放 0 到 9，其他的空間就浪費掉了？
 		所以我們可以設計成每個元素都拿來存放 0~99、0~999……
