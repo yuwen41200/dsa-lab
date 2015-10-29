@@ -33,7 +33,7 @@ int main() {
     if (!fin.is_open() || !fout.is_open())
         return 1;
     while (getline(fin, temp))
-        str += temp;
+        str += temp + '\n';
     fin.close();
 
     // Build an array whose indices corresponds to the word count of the string.
