@@ -1,8 +1,9 @@
 /**
- * Threaded Binary Search Tree
+ * Threaded Binary Search Tree C++ Implementation
  * Author: Yu-wen Pwu, NCTU CS, Taiwan
  * Compilation: g++ -Wall -Wextra -Wpedantic --std=c++11 main.cpp -o main
  */
+
 #include <iostream>
 using namespace std;
 
@@ -65,9 +66,11 @@ BinaryTree::~BinaryTree() {
 }
 
 void BinaryTree::insert(int value) {
+	// creating a new node
 	Node *n = new Node(value);
 	Node *p = root;
 	while (p) {
+		// going to the left subtree
 		if (value < p->value) {
 			if (p->leftIsThread) {
 				n->rightChild = p;
@@ -81,7 +84,8 @@ void BinaryTree::insert(int value) {
 				p = p->leftChild;
 			}
 		}
-		else {
+		// going to the right subtree
+		else if (value > p->value) {
 			if (p->rightIsThread) {
 				n->leftChild = p;
 				n->rightChild = p->rightChild;
@@ -94,7 +98,12 @@ void BinaryTree::insert(int value) {
 				p = p->rightChild;
 			}
 		}
+		// the node already exists
+		else {
+			return;
+		}
 	}
+	// the tree is empty
 	n->leftChild = head;
 	n->rightChild = tail;
 	root = n;
@@ -102,7 +111,73 @@ void BinaryTree::insert(int value) {
 }
 
 void BinaryTree::remove(int value) {
-	//TODO: delete a node
+	// the tree is empty
+	if (!root)
+		return;
+	// finding the node in the tree
+	Node *p = root, *q = nullptr;
+	bool goRight = true;
+	while (p) {
+		if (value < p->value) {
+			if (p->leftIsThread) {
+				return;
+			}
+			else {
+				q = p;
+				p = p->leftChild;
+				goRight = false;
+			}
+		}
+		else if (value > p->value) {
+			if (p->rightIsThread) {
+				return;
+			}
+			else {
+				q = p;
+				p = p->rightChild;
+				goRight = true;
+			}
+		}
+		else {
+			break;
+		}
+	}
+	// case 1. the node has no children
+	if (p && q && p->leftIsThread && p->rightIsThread) {
+		if (goRight) {
+			q->rightIsThread = true;
+			q->rightChild = p->rightChild;
+			if (!p->rightChild->leftIsThread)
+				p->rightChild->leftChild = q;
+		}
+		else {
+			q->leftIsThread = true;
+			q->leftChild = p->leftChild;
+			if (!p->leftChild->rightIsThread)
+				p->leftChild->rightChild = q;
+		}
+		delete p;
+		size--;
+	}
+	// case 2. the node has right subtree
+	else if (p && q && p->leftIsThread) {
+		// ...
+	}
+	// case 3. the node has left subtree
+	else if (p && q && p->rightIsThread) {
+		// ...
+	}
+	// case 4. the node has two subtrees
+	else if (p && q) {
+		remove(n);
+		// ...
+	}
+	// case 5. the node is the root of the tree
+	else {
+		remove(n);
+		a = b;
+		// ...
+	}
 }
 
 void BinaryTree::inOrder() {
@@ -111,10 +186,7 @@ void BinaryTree::inOrder() {
 		p = p->leftChild;
 	while (p != tail) {
 		cout << p->value << " ";
-		if (p->rightIsThread)
-			p = p->rightChild;
-		else
-			p = findSuccessor(p);
+		p = findSuccessor(p);
 	}
 	cout << endl;
 }
@@ -125,10 +197,7 @@ void BinaryTree::reverseInOrder() {
 		p = p->rightChild;
 	while (p != head) {
 		cout << p->value << " ";
-		if (p->leftIsThread)
-			p = p->leftChild;
-		else
-			p = findPredecessor(p);
+		p = findPredecessor(p);
 	}
 	cout << endl;
 }
@@ -142,29 +211,49 @@ void BinaryTree::deleteAll(Node *node) {
 }
 
 Node *BinaryTree::findSuccessor(Node *node) {
-	node = node->rightChild;
-	while (!node->leftIsThread)
-		node = node->leftChild;
+	if (node->rightIsThread) {
+		node = node->rightChild;
+	}
+	else {
+		node = node->rightChild;
+		while (!node->leftIsThread)
+			node = node->leftChild;
+	}
 	return node;
 }
 
 Node *BinaryTree::findPredecessor(Node *node) {
-	node = node->leftChild;
-	while (!node->rightIsThread)
-		node = node->rightChild;
+	if (node->leftIsThread) {
+		node = node->leftChild;
+	}
+	else {
+		node = node->leftChild;
+		while (!node->rightIsThread)
+			node = node->rightChild;
+	}
 	return node;
 }
 
 int main(int argc, char **argv) {
 	BinaryTree *binaryTree = new BinaryTree();
-	binaryTree->insert(11);
-	binaryTree->insert(20);
-	binaryTree->insert(56);
-	binaryTree->insert(47);
-	binaryTree->insert(63);
-	binaryTree->insert(38);
-	binaryTree->insert(29);
-	binaryTree->insert(51);
+	binaryTree->insert(11); // 11
+	binaryTree->insert(20); // 11, 20
+	binaryTree->insert(56); // 11, 20, 56
+	binaryTree->insert(47); // 11, 20, 47, 56
+	binaryTree->insert(63); // 11, 20, 47, 56, 63
+	binaryTree->insert(25); // 11, 20, 25, 47, 56, 63
+	binaryTree->insert(38); // 11, 20, 25, 38, 47, 56, 63
+	binaryTree->insert(60); // 11, 20, 25, 38, 47, 56, 60, 63
+	binaryTree->insert(29); // 11, 20, 25, 29, 38, 47, 56, 60, 63
+	binaryTree->insert(51); // 11, 20, 25, 29, 38, 47, 51, 56, 60, 63
+	binaryTree->insert(47); // duplicate
+	binaryTree->insert(11); // duplicate
+	binaryTree->remove(63); // 11, 20, 25, 29, 38, 47, 51, 56, 60
+	binaryTree->remove(11); // 20, 25, 29, 38, 47, 51, 56, 60
+	binaryTree->remove(51); // 20, 25, 29, 38, 47, 56, 60
+	binaryTree->remove(47); // 20, 25, 29, 38, 56, 60
+	binaryTree->remove(47); // not found
+	binaryTree->remove(32); // not found
 	binaryTree->inOrder();
 	binaryTree->reverseInOrder();
 	delete binaryTree;
