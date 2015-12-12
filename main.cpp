@@ -1,6 +1,7 @@
 /**
  * Threaded Binary Search Tree
  * Author: Yu-wen Pwu, NCTU CS, Taiwan
+ * Compilation: g++ -Wall -Wextra -Wpedantic --std=c++11 main.cpp -o main
  */
 #include <iostream>
 using namespace std;
@@ -23,11 +24,13 @@ public:
 	void insert(int value);
 	void remove(int value);
 	void inOrder();
-	void reverseOrder();
+	void reverseInOrder();
 private:
 	Node *root, *head, *tail;
 	int size;
 	void deleteAll(Node *node);
+	Node *findSuccessor(Node *node);
+	Node *findPredecessor(Node *node);
 };
 
 Node::Node() {
@@ -103,11 +106,31 @@ void BinaryTree::remove(int value) {
 }
 
 void BinaryTree::inOrder() {
-	//TODO: travel the tree from head to tail
+	Node *p = root;
+	while (!p->leftIsThread)
+		p = p->leftChild;
+	while (p != tail) {
+		cout << p->value << " ";
+		if (p->rightIsThread)
+			p = p->rightChild;
+		else
+			p = findSuccessor(p);
+	}
+	cout << endl;
 }
 
-void BinaryTree::reverseOrder() {
-	//TODO: travel the tree from tail to head
+void BinaryTree::reverseInOrder() {
+	Node *p = root;
+	while (!p->rightIsThread)
+		p = p->rightChild;
+	while (p != head) {
+		cout << p->value << " ";
+		if (p->leftIsThread)
+			p = p->leftChild;
+		else
+			p = findPredecessor(p);
+	}
+	cout << endl;
 }
 
 void BinaryTree::deleteAll(Node *node) {
@@ -116,4 +139,34 @@ void BinaryTree::deleteAll(Node *node) {
 	if (!node->rightIsThread && node->rightChild)
 		deleteAll(node->rightChild);
 	delete node;
+}
+
+Node *BinaryTree::findSuccessor(Node *node) {
+	node = node->rightChild;
+	while (!node->leftIsThread)
+		node = node->leftChild;
+	return node;
+}
+
+Node *BinaryTree::findPredecessor(Node *node) {
+	node = node->leftChild;
+	while (!node->rightIsThread)
+		node = node->rightChild;
+	return node;
+}
+
+int main(int argc, char **argv) {
+	BinaryTree *binaryTree = new BinaryTree();
+	binaryTree->insert(11);
+	binaryTree->insert(20);
+	binaryTree->insert(56);
+	binaryTree->insert(47);
+	binaryTree->insert(63);
+	binaryTree->insert(38);
+	binaryTree->insert(29);
+	binaryTree->insert(51);
+	binaryTree->inOrder();
+	binaryTree->reverseInOrder();
+	delete binaryTree;
+	return 0;
 }
