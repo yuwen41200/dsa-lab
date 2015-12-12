@@ -26,6 +26,7 @@ public:
 	void remove(int value);
 	void inOrder();
 	void reverseInOrder();
+	void getSize();
 private:
 	Node *root, *head, *tail;
 	int size;
@@ -147,13 +148,13 @@ void BinaryTree::remove(int value) {
 		if (goRight) {
 			q->rightIsThread = true;
 			q->rightChild = p->rightChild;
-			if (!p->rightChild->leftIsThread)
+			if (p->rightChild->leftIsThread)
 				p->rightChild->leftChild = q;
 		}
 		else {
 			q->leftIsThread = true;
 			q->leftChild = p->leftChild;
-			if (!p->leftChild->rightIsThread)
+			if (p->leftChild->rightIsThread)
 				p->leftChild->rightChild = q;
 		}
 		delete p;
@@ -161,26 +162,88 @@ void BinaryTree::remove(int value) {
 	}
 	// case 2. the node has right subtree
 	else if (p && q && p->leftIsThread) {
-		// ...
+		Node *r = p->rightChild;
+		while (!r->leftIsThread) {
+			r = r->leftChild;
+		}
+		if (goRight) {
+			q->rightChild = p->rightChild;
+			r->leftChild = q;
+		}
+		else {
+			q->leftChild = p->rightChild;
+			r->leftChild = p->leftChild;
+			if (p->leftChild->rightIsThread)
+				p->leftChild->rightChild = r;
+		}
+		delete p;
+		size--;
 	}
 	// case 3. the node has left subtree
 	else if (p && q && p->rightIsThread) {
-		// ...
+		Node *r = p->leftChild;
+		while (!r->rightIsThread) {
+			r = r->rightChild;
+		}
+		if (goRight) {
+			q->rightChild = p->leftChild;
+			r->rightChild = p->rightChild;
+			if (p->rightChild->leftIsThread)
+				p->rightChild->leftChild = r;
+		}
+		else {
+			q->leftChild = p->leftChild;
+			r->rightChild = q;
+		}
+		delete p;
+		size--;
 	}
 	// case 4. the node has two subtrees
 	else if (p && q) {
-		remove(n);
-		// ...
+		Node *r = findSuccessor(p);
+		int backup = r->value;
+		remove(backup);
+		p->value = backup;
 	}
 	// case 5. the node is the root of the tree
-	else {
-		remove(n);
-		a = b;
-		// ...
+	else if (p) {
+		if (p->leftIsThread && p->rightIsThread) {
+			root = nullptr;
+			delete p;
+			size--;
+		}
+		else if (p->leftIsThread) {
+			Node *r = p->rightChild;
+			while (!r->leftIsThread)
+				r = r->leftChild;
+			r->leftChild = head;
+			root = p->rightChild;
+			delete p;
+			size--;
+		}
+		else if (p->rightIsThread) {
+			Node *r = p->leftChild;
+			while (!r->rightIsThread)
+				r = r->rightChild;
+			r->rightChild = tail;
+			root = p->leftChild;
+			delete p;
+			size--;
+		}
+		else {
+			Node *r = findSuccessor(p);
+			int backup = r->value;
+			remove(backup);
+			p->value = backup;
+		}
 	}
 }
 
 void BinaryTree::inOrder() {
+	if (!root) {
+		cout << "NULL" << endl;
+		return;
+	}
 	Node *p = root;
 	while (!p->leftIsThread)
 		p = p->leftChild;
@@ -192,6 +255,10 @@ void BinaryTree::inOrder() {
 }
 
 void BinaryTree::reverseInOrder() {
+	if (!root) {
+		cout << "NULL" << endl;
+		return;
+	}
 	Node *p = root;
 	while (!p->rightIsThread)
 		p = p->rightChild;
@@ -200,6 +267,10 @@ void BinaryTree::reverseInOrder() {
 		p = findPredecessor(p);
 	}
 	cout << endl;
+}
+
+void BinaryTree::getSize() {
+	cout << size << endl;
 }
 
 void BinaryTree::deleteAll(Node *node) {
@@ -256,6 +327,16 @@ int main(int argc, char **argv) {
 	binaryTree->remove(32); // not found
 	binaryTree->inOrder();
 	binaryTree->reverseInOrder();
+	binaryTree->getSize();
+	binaryTree->remove(29); // 20, 25, 38, 56, 60
+	binaryTree->remove(38); // 20, 25, 56, 60
+	binaryTree->remove(60); // 20, 25, 56
+	binaryTree->remove(56); // 20, 25
+	binaryTree->remove(25); // 20
+	binaryTree->remove(20); // NULL
+	binaryTree->inOrder();
+	binaryTree->reverseInOrder();
+	binaryTree->getSize();
 	delete binaryTree;
 	return 0;
 }
