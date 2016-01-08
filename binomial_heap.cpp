@@ -306,6 +306,14 @@ int main() {
 		cout << "a->getMin() = " << a->getMin() << endl; // 7
 		cout << "a->getSize() = " << a->getSize() << endl; // 4
 		cout << "a->getSizeBelowKey(40) = " << a->getSizeBelowKey(40) << endl; // 1
+		a->deleteMin();
+		a->deleteMin();
+		a->deleteMin();
+		a->deleteMin();
+		a->deleteMin();
+		cout << "a->getMin() = " << a->getMin() << endl; // -1
+		cout << "a->getSize() = " << a->getSize() << endl; // 0
+		cout << "a->getSizeBelowKey(50) = " << a->getSizeBelowKey(50) << endl; // 0
 		delete a;
 	}
 	catch (exception& e) {
