@@ -58,6 +58,7 @@ public:
 	int getSizeBelowKey(int key, Node *node = UNINITIALIZED);
 private:
 	Node *head; // the head of the binomial tree root list
+	void deleteAll(Node *node);
 };
 
 BinomialHeap::BinomialHeap() {
@@ -65,7 +66,7 @@ BinomialHeap::BinomialHeap() {
 }
 
 BinomialHeap::~BinomialHeap() {
-
+	deleteAll(head);
 }
 
 /**
@@ -165,12 +166,54 @@ void BinomialHeap::merge(BinomialHeap *binomialHeap) {
 	}
 }
 
+/**
+ * Find a node with node id "nid" and decrease its key by "key"
+ */
 void BinomialHeap::decreaseKey(int nid, int key) {
-
+// TODO
 }
 
+/**
+ * Delete the smallest node in the binomial heap
+ */
 void BinomialHeap::deleteMin() {
-
+	if (!head)
+		return;
+	// find the address of the smallest node
+	int min = head->key;
+	Node *ptrMin = head;
+	Node *ptrMinPrev = nullptr;
+	Node *temp = head;
+	while (temp->sibling) { // traverse the binomial tree root list
+		if (temp->sibling->key < min) { // each binomial tree is also a min heap
+			min = temp->sibling->key;
+			ptrMin = temp->sibling;
+			ptrMinPrev = temp;
+		}
+		temp = temp->sibling;
+	}
+	// remove that binomial tree from the root list
+	if (ptrMinPrev)
+		ptrMinPrev->sibling = ptrMin->sibling;
+	else
+		head = ptrMin->sibling;
+	// reverse the list of the children of that binomial tree
+	Node *prev = nullptr;
+	Node *curr = ptrMin->child;
+	Node *next;
+	while (curr) {
+		next = curr->sibling;
+		curr->sibling = prev;
+		curr->parent = nullptr;
+		prev = curr;
+		curr = next;
+	}
+	// delete the root of that binomial tree
+	delete ptrMin;
+	// merge them back to the original binomial heap
+	BinomialHeap *binomialHeap = new BinomialHeap();
+	binomialHeap->head = prev; // construct another binomial heap with the new root list
+	merge(binomialHeap); // and merge them together, do not delete "binomialHeap" !!
 }
 
 /**
@@ -219,6 +262,14 @@ int BinomialHeap::getSizeBelowKey(int key, Node *node) {
 	return size;
 }
 
+void BinomialHeap::deleteAll(Node *node) {
+	if (node) {
+		deleteAll(node->sibling);
+		deleteAll(node->child);
+		delete node;
+	}
+}
+
 int main() {
 	try {
 		BinomialHeap *a = new BinomialHeap();
@@ -242,6 +293,19 @@ int main() {
 		cout << "a->getSize() = " << a->getSize() << endl; // 8
 		cout << "a->getSizeBelowKey(60) = " << a->getSizeBelowKey(60) << endl; // 6
 		a->insert(0, 0); // NONPOSITIVE_KEY_EXCEPTION
+		a->decreaseKey(4, 37);
+		a->decreaseKey(2, 11);
+		a->decreaseKey(2, 11);
+		a->decreaseKey(3, 17);
+		cout << "a->getMin() = " << a->getMin() << endl; // 3
+		cout << "a->getSize() = " << a->getSize() << endl; // 7
+		cout << "a->getSizeBelowKey(45) = " << a->getSizeBelowKey(45) << endl; // 4
+		a->deleteMin();
+		a->deleteMin();
+		a->deleteMin();
+		cout << "a->getMin() = " << a->getMin() << endl; // 7
+		cout << "a->getSize() = " << a->getSize() << endl; // 4
+		cout << "a->getSizeBelowKey(40) = " << a->getSizeBelowKey(40) << endl; // 1
 		delete a;
 	}
 	catch (exception& e) {
