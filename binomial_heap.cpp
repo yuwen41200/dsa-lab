@@ -19,6 +19,12 @@ class NonpositiveKeyException : public exception {
 	}
 };
 
+class InvalidNodeIdException : public exception {
+	const char *what() const noexcept {
+		return "INVALID_NODE_ID_EXCEPTION\n";
+	}
+};
+
 class Node {
 public:
 	Node();
@@ -58,7 +64,8 @@ public:
 	int getSizeBelowKey(int key, Node *node = UNINITIALIZED);
 private:
 	Node *head; // the head of the binomial tree root list
-	void deleteAll(Node *node);
+	void deleteAll(Node *node = UNINITIALIZED);
+	Node *find(int nid, Node *node = UNINITIALIZED);
 };
 
 BinomialHeap::BinomialHeap() {
@@ -66,7 +73,7 @@ BinomialHeap::BinomialHeap() {
 }
 
 BinomialHeap::~BinomialHeap() {
-	deleteAll(head);
+	deleteAll();
 }
 
 /**
@@ -170,7 +177,24 @@ void BinomialHeap::merge(BinomialHeap *binomialHeap) {
  * Find a node with node id "nid" and decrease its key by "key"
  */
 void BinomialHeap::decreaseKey(int nid, int key) {
-// TODO
+	Node *ptr = find(nid); // find the address of the node with node id "nid"
+	if (ptr) {
+		ptr->key -= key; // decrease its key by "key"
+		while (ptr->parent && ptr->parent->key > ptr->key) { // readjust the binomial tree
+			int temp = ptr->key;
+			ptr->key = ptr->parent->key;
+			ptr->parent->key = temp;
+			temp = ptr->nid;
+			ptr->nid = ptr->parent->nid;
+			ptr->parent->nid = temp;
+			ptr = ptr->parent;
+		}
+		if (ptr->key <= 0)
+			deleteMin(); // if the node has a nonpositive key, it will become the smallest node
+	}
+	else { // node id "nid" not found
+		throw InvalidNodeIdException();
+	}
 }
 
 /**
@@ -263,11 +287,30 @@ int BinomialHeap::getSizeBelowKey(int key, Node *node) {
 }
 
 void BinomialHeap::deleteAll(Node *node) {
+	node = (node == UNINITIALIZED) ? head : node;
 	if (node) {
 		deleteAll(node->sibling);
 		deleteAll(node->child);
 		delete node;
 	}
+}
+
+Node *BinomialHeap::find(int nid, Node *node) {
+	node = (node == UNINITIALIZED) ? head : node;
+	Node *ptr = nullptr;
+	if (node) {
+		if (node->nid == nid)
+			return node;
+		else {
+			ptr = find(nid, node->sibling);
+			if (ptr)
+				return ptr;
+			ptr = find(nid, node->child);
+			return ptr;
+		}
+	}
+	else
+		return nullptr;
 }
 
 int main() {
@@ -300,6 +343,7 @@ int main() {
 		cout << "a->getMin() = " << a->getMin() << endl; // 3
 		cout << "a->getSize() = " << a->getSize() << endl; // 7
 		cout << "a->getSizeBelowKey(45) = " << a->getSizeBelowKey(45) << endl; // 4
+		a->decreaseKey(0, 13); // INVALID_NODE_ID_EXCEPTION
 		a->deleteMin();
 		a->deleteMin();
 		a->deleteMin();
@@ -317,7 +361,7 @@ int main() {
 		delete a;
 	}
 	catch (exception& e) {
-		cout << e.what();
+		cout << e.what() << endl;
 	}
 	return 0;
 }
