@@ -1,7 +1,7 @@
 /**
  * Binomial Heap C++ Implementation
  * Author: Yu-wen Pwu, NCTU CS, Taiwan
- * Compilation: g++ -Wall -Wextra -Wpedantic -std=c++11 main.cpp -o main
+ * Compilation: g++ -Wall -Wextra -Wpedantic -std=c++11 binomial_heap.cpp -o binomial_heap
  * Comments: I love Java coding style !!!
  *           I cannot accept any other coding styles !!!
  */
@@ -314,8 +314,10 @@ Node *BinomialHeap::find(int nid, Node *node) {
 }
 
 int main() {
+	BinomialHeap *a;
+	BinomialHeap *b;
 	try {
-		BinomialHeap *a = new BinomialHeap();
+		a = new BinomialHeap();
 		a->insert(1, 60);
 		a->insert(2, 20);
 		a->insert(3, 30);
@@ -323,33 +325,43 @@ int main() {
 		a->insert(5, 50);
 		cout << "a->getMin() = " << a->getMin() << endl; // 2
 		cout << "a->getSize() = " << a->getSize() << endl; // 5
-		cout << "a->getSizeBelowKey(50) = " << a->getSizeBelowKey(50) << endl; // 3
-		BinomialHeap *b = new BinomialHeap();
+		cout << "a->getSizeBelowKey(50) = " << a->getSizeBelowKey(50) << endl << endl; // 3
+		b = new BinomialHeap();
 		b->insert(6, 15);
 		b->insert(7, 35);
 		b->insert(8, 85);
 		cout << "b->getMin() = " << b->getMin() << endl; // 6
 		cout << "b->getSize() = " << b->getSize() << endl; // 3
-		cout << "b->getSizeBelowKey(55) = " << b->getSizeBelowKey(55) << endl; // 2
+		cout << "b->getSizeBelowKey(55) = " << b->getSizeBelowKey(55) << endl << endl; // 2
 		a->merge(b);
 		cout << "a->getMin() = " << a->getMin() << endl; // 6
 		cout << "a->getSize() = " << a->getSize() << endl; // 8
-		cout << "a->getSizeBelowKey(60) = " << a->getSizeBelowKey(60) << endl; // 6
+		cout << "a->getSizeBelowKey(60) = " << a->getSizeBelowKey(60) << endl << endl; // 6
 		a->insert(0, 0); // NONPOSITIVE_KEY_EXCEPTION
+	}
+	catch (const exception& e) {
+		cerr << e.what() << endl;
+	}
+	try {
 		a->decreaseKey(4, 37);
 		a->decreaseKey(2, 11);
 		a->decreaseKey(2, 11);
 		a->decreaseKey(3, 17);
 		cout << "a->getMin() = " << a->getMin() << endl; // 3
 		cout << "a->getSize() = " << a->getSize() << endl; // 7
-		cout << "a->getSizeBelowKey(45) = " << a->getSizeBelowKey(45) << endl; // 4
+		cout << "a->getSizeBelowKey(45) = " << a->getSizeBelowKey(45) << endl << endl; // 4
 		a->decreaseKey(0, 13); // INVALID_NODE_ID_EXCEPTION
+	}
+	catch (const exception& e) {
+		cerr << e.what() << endl;
+	}
+	try {
 		a->deleteMin();
 		a->deleteMin();
 		a->deleteMin();
 		cout << "a->getMin() = " << a->getMin() << endl; // 7
 		cout << "a->getSize() = " << a->getSize() << endl; // 4
-		cout << "a->getSizeBelowKey(40) = " << a->getSizeBelowKey(40) << endl; // 1
+		cout << "a->getSizeBelowKey(40) = " << a->getSizeBelowKey(40) << endl << endl; // 1
 		a->deleteMin();
 		a->deleteMin();
 		a->deleteMin();
@@ -357,11 +369,11 @@ int main() {
 		a->deleteMin();
 		cout << "a->getMin() = " << a->getMin() << endl; // -1
 		cout << "a->getSize() = " << a->getSize() << endl; // 0
-		cout << "a->getSizeBelowKey(50) = " << a->getSizeBelowKey(50) << endl; // 0
+		cout << "a->getSizeBelowKey(50) = " << a->getSizeBelowKey(50) << endl << endl; // 0
 		delete a;
 	}
-	catch (exception& e) {
-		cout << e.what() << endl;
+	catch (const exception& e) {
+		cerr << e.what() << endl;
 	}
 	return 0;
 }
