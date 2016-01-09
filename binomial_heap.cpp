@@ -286,6 +286,9 @@ int BinomialHeap::getSizeBelowKey(int key, Node *node) {
 	return size;
 }
 
+/**
+ * Delete all nodes in the binomial heap
+ */
 void BinomialHeap::deleteAll(Node *node) {
 	node = (node == UNINITIALIZED) ? head : node;
 	if (node) {
@@ -295,6 +298,9 @@ void BinomialHeap::deleteAll(Node *node) {
 	}
 }
 
+/**
+ * Return the address of the node with node id "nid"
+ */
 Node *BinomialHeap::find(int nid, Node *node) {
 	node = (node == UNINITIALIZED) ? head : node;
 	Node *ptr = nullptr;
