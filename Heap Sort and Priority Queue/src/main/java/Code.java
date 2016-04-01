@@ -40,8 +40,8 @@ public static void main(String[] args) {
 private void heapify(Heap heap, int current) {
 	int left = Heap.leftChild(current);
 	int right = Heap.rightChild(current);
-	int largest = (left <= heap.size && heap.data[left] > heap.data[current]) ? left : current;
-	largest = (right <= heap.size && heap.data[right] > heap.data[largest]) ? right : largest;
+	int largest = (left < heap.size && heap.data[left] > heap.data[current]) ? left : current;
+	largest = (right < heap.size && heap.data[right] > heap.data[largest]) ? right : largest;
 	if (largest != current) {
 		int temp = heap.data[current];
 		heap.data[current] = heap.data[largest];
