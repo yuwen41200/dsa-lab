@@ -39,8 +39,8 @@ public static void main(String[] args) {
 }
 
 private void heapify(Heap heap, int current) {
-	int left = heap.leftChild(current);
-	int right = heap.rightChild(current);
+	int left = Heap.leftChild(current);
+	int right = Heap.rightChild(current);
 	int largest = (left <= heap.size && heap.data[left] > heap.data[current]) ? left : current;
 	largest = (right <= heap.size && heap.data[right] > heap.data[largest]) ? right : largest;
 	if (largest != current) {
@@ -80,7 +80,13 @@ private int heapExtractMax(Heap heap) throws Exception {
 }
 
 private void heapInsert(Heap heap, int key) {
-	// TODO
+	heap.size++;
+	int i = heap.size-1;
+	while (i > 0 && heap.data[Heap.parent(i)] < key) {
+		heap.data[i] = heap.data[Heap.parent(i)];
+		i = Heap.parent(i);
+	}
+	heap.data[i] = key;
 }
 
 }
@@ -95,15 +101,15 @@ Heap(int i) {
 	size = 0;
 }
 
-int leftChild(int i) {
+static int leftChild(int i) {
 	return 2*i+1;
 }
 
-int rightChild(int i) {
+static int rightChild(int i) {
 	return 2*i+2;
 }
 
-int parent(int i) {
+static int parent(int i) {
 	return (i-1)/2;
 }
 

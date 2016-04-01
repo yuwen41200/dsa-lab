@@ -1,5 +1,5 @@
-group 'yuwen41200'
-version '1.0-SNAPSHOT'
+group 'me.ywpu'
+version 'rev1'
 apply plugin: 'java'
 
 repositories {
@@ -8,4 +8,5 @@ repositories {
 
 dependencies {
     compile 'org.msgpack:msgpack-core:0.8.4+'
+    testCompile 'junit:junit:4.12+'
 }
