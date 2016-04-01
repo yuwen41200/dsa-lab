@@ -1,5 +1,15 @@
-# C/C++ Executable Files
+# C/C++ Ignore Files
 *.out
 
-# Java Executable Files
+# Java Ignore Files
 *.class
+*.jar
+
+# Gradle Ignore Files
+.gradle/
+build/
+!gradle-wrapper.jar
+
+# IDE Ignore Files
+.clion/
+.idea/
