@@ -25,9 +25,8 @@ public static void main(String[] args) {
 				heap.data[j] = unpacker.unpackInt();
 			code.heapSort(heap);
 			packer.packArrayHeader(length);
-			for (int j = 0; j < length; j++) {
+			for (int j = 0; j < length; j++)
 				packer.packInt(heap.data[j]);
-			}
 		}
 		unpacker.close();
 		packer.close();
@@ -53,9 +52,8 @@ private void heapify(Heap heap, int current) {
 
 private void buildHeap(Heap heap) {
 	heap.size = heap.data.length;
-	for (int i = heap.size/2-1; i >= 0; i--) {
+	for (int i = heap.size/2-1; i >= 0; i--)
 		heapify(heap, i);
-	}
 }
 
 private void heapSort(Heap heap) {
@@ -79,7 +77,9 @@ private int heapExtractMax(Heap heap) throws Exception {
 	return max;
 }
 
-private void heapInsert(Heap heap, int key) {
+private void heapInsert(Heap heap, int key) throws Exception {
+	if (heap.size == heap.data.length)
+		throw new Exception("Heap Overflow");
 	heap.size++;
 	int i = heap.size-1;
 	while (i > 0 && heap.data[Heap.parent(i)] < key) {
