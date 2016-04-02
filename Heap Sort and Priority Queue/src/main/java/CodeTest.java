@@ -15,8 +15,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CodeTest {
 
-@Test
-public void test() throws Exception {
+public static void main(String[] args) {
 
 	final int dataSize1 = 1;
 	final int dataSize2 = 2;
