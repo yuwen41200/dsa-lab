@@ -34,7 +34,6 @@ public static void main(String[] args) {
 	catch (Exception e) {
 		e.printStackTrace();
 	}
-	System.exit(0);
 }
 
 private void heapify(Heap heap, int current) {

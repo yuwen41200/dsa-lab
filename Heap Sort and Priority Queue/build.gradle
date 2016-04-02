@@ -3,22 +3,21 @@ version 'rev1'
 apply plugin: 'java'
 
 jar {
-    manifest {
-        attributes 'Main-Class': 'Code'
-    }
-    from {
-        configurations.compile.collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    }
-    exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+	manifest {
+		attributes 'Main-Class': 'CodeTest'
+	}
+	from {
+		configurations.compile.collect {
+			it.isDirectory() ? it : zipTree(it)
+		}
+	}
+	exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
 }
 
 repositories {
-    mavenCentral()
+	mavenCentral()
 }
 
 dependencies {
-    compile 'org.msgpack:msgpack-core:0.8.4+'
-    testCompile 'junit:junit:4.12+'
+	compile 'org.msgpack:msgpack-core:0.8.4+'
 }
