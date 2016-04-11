@@ -30,13 +30,10 @@ public static void main(String[] args) {
 			for (int j = 0; j < length; j++) {
 				int key = pattern.charAt(j) - 'a';
 				String value = unpacker.unpackString();
-				if (map[key] == null) {
+				if (match == 1 && map[key] == null)
 					map[key] = value;
-				}
-				else if (!map[key].equals(value)) {
+				else if (match == 1 && !map[key].equals(value))
 					match = 0;
-					break;
-				}
 			}
 			packer.packInt(match);
 		}
