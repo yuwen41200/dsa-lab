@@ -22,8 +22,13 @@ public static void main(String[] args) {
 		for (int i = 0; i < count; i++) {
 			String pattern = unpacker.unpackString();
 			int length = pattern.length();
-			if (unpacker.unpackArrayHeader() != length)
-				throw new Exception("The length is inconsistent.");
+			int wordLength = unpacker.unpackArrayHeader();
+			if (wordLength != length) {
+				for (int j = 0; j < wordLength; j++)
+					unpacker.unpackString();
+				packer.packInt(0);
+				continue;
+			}
 			for (int j = 0; j < 26; j++)
 				map[j] = null;
 			int match = 1;
