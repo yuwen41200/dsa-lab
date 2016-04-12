@@ -35,8 +35,14 @@ public static void main(String[] args) {
 			for (int j = 0; j < length; j++) {
 				int key = pattern.charAt(j) - 'a';
 				String value = unpacker.unpackString();
-				if (match == 1 && map[key] == null)
+				if (match == 1 && map[key] == null) {
+					for (String word : map)
+						if (word != null && word.equals(value)) {
+							match = 0;
+							break;
+						}
 					map[key] = value;
+				}
 				else if (match == 1 && !map[key].equals(value))
 					match = 0;
 			}

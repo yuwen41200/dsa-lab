@@ -14,7 +14,7 @@ public class CodeTest {
 
 public static void main(String[] args) throws Exception {
 	// preparing inputs
-	final int count = 4;
+	final int count = 5;
 	final String pattern1 = "xyxy";
 	final String sequence1 = "sense lab sense lab";
 	final int match1 = 1;
@@ -27,11 +27,15 @@ public static void main(String[] args) throws Exception {
 	final String pattern4 = "apple";
 	final String sequence4 = "sleep go go no time";
 	final int match4 = 1;
+	final String pattern5 = "ap";
+	final String sequence5 = "same same";
+	final int match5 = 0;
 	// generating inputs
 	String[] seqArray1 = sequence1.split(" ");
 	String[] seqArray2 = sequence2.split(" ");
 	String[] seqArray3 = sequence3.split(" ");
 	String[] seqArray4 = sequence4.split(" ");
+	String[] seqArray5 = sequence5.split(" ");
 	// writing inputs
 	MessagePacker packer = MessagePack.newDefaultPacker(new FileOutputStream("input.txt"));
 	packer.packInt(count);
@@ -51,6 +55,10 @@ public static void main(String[] args) throws Exception {
 	packer.packArrayHeader(seqArray4.length);
 	for (String word : seqArray4)
 		packer.packString(word);
+	packer.packString(pattern5);
+	packer.packArrayHeader(seqArray5.length);
+	for (String word : seqArray5)
+		packer.packString(word);
 	packer.close();
 	// running the tests
 	Code.main(null);
@@ -60,6 +68,7 @@ public static void main(String[] args) throws Exception {
 	assertEquals(match2, unpacker.unpackInt());
 	assertEquals(match3, unpacker.unpackInt());
 	assertEquals(match4, unpacker.unpackInt());
+	assertEquals(match5, unpacker.unpackInt());
 	unpacker.close();
 	// exiting the tests
 	System.exit(0);
