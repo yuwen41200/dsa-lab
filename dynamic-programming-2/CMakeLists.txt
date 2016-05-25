@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.5)
+project(dynamic-programming-2)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(SOURCE_FILES main.cpp)
+include_directories(msgpack-1.4.1/include/)
+add_executable(DynamicProgramming ${SOURCE_FILES})
