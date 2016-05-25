@@ -142,7 +142,7 @@ int main() {
 					ans[m][n-m].insert(temp.begin(), temp.end());
 					#ifndef RELEASE
 					std::cout << "ans[" << m << "][" << n << "] = {";
-                    for (auto it = ans[m][n-m].begin(); it != ans[m][n-m].end(); ++it)
+					for (auto it = ans[m][n-m].begin(); it != ans[m][n-m].end(); ++it)
 						std::cout << " " << *it;
 					std::cout << " }" << std::endl;
 					#endif
