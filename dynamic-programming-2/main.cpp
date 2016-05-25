@@ -4,7 +4,10 @@
  * by Yu-wen Pwu (rev1)
  */
 
+#define RELEASE
+
 #include <fstream>
+#include <iostream>
 #include <msgpack.hpp>
 #include <sstream>
 #include <string>
@@ -20,8 +23,9 @@ std::unordered_set<int> bit_and(std::unordered_set<int>, std::unordered_set<int>
 std::unordered_set<int> bit_or(std::unordered_set<int>, std::unordered_set<int>);
 
 int main() {
+	#ifdef RELEASE
 	std::fstream is("input.txt", std::ios::in | std::ios::binary);
-	assert(is.is_open());
+	// assert(is.is_open());
 
 	struct stat st;
 	stat("input.txt", &st);
@@ -29,7 +33,7 @@ int main() {
 
 	char *data = new char[len];
 	is.read(data, len);
-	assert(is.good());
+	// assert(is.good());
 	is.close();
 
 	msgpack::unpacked result;
@@ -40,7 +44,9 @@ int main() {
 	msgpack::unpack(result, data, len, off);
 	result.get().convert(&count);
 
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < count; ++i) {
+	#endif
+
 		// TODO: This has fucking high complexity !!! Better solution ?
 		/**
 		 * ######################### Algorithm #########################
@@ -48,7 +54,7 @@ int main() {
 		 *     op[i] : operator i
 		 * -------------------------------------------------------------
 		 * ans[i][j] = op[k](ans[i][k], ans[k+1][j]) where i <= k < j
-		 * ########################## Example ##########################
+		 * ######################### Example 1 #########################
 		 * Input : 1 + 3 * 4
 		 * -------------------------------------------------------------
 		 * ans[0][0] = { 1 }
@@ -61,7 +67,7 @@ int main() {
 		 * ans[0][2] = { +(1, 12), *(4, 4) } = { 13, 16 }
 		 * -------------------------------------------------------------
 		 * Output : 2
-		 * ########################## Example ##########################
+		 * ######################### Example 2 ##########################
 		 * Input : 3 + 4 * 1
 		 * -------------------------------------------------------------
 		 * ans[0][0] = { 3 }
@@ -77,25 +83,43 @@ int main() {
 		 * #############################################################
 		 */
 
+		#ifdef RELEASE
 		std::string expression;
 		msgpack::unpack(result, data, len, off);
 		result.get().convert(&expression);
+		#else
+		// std::string expression = "1 + 3 * 4";
+		// std::string expression = "3 + 4 * 1";
+		// std::string expression = "1 +3 *  4";
+		std::string expression = "1+2-3*4&5|6&7*8-9+10";
+		#endif
 
 		int length = operand_count(expression);
 		std::unordered_set<int>** ans = new std::unordered_set<int>*[length];
 		for (int j = 0; j < length; ++j)
 			ans[j] = new std::unordered_set<int>[length-j];
 		fp* op = new fp[length-1];
+		#ifndef RELEASE
+		std::cout << "length = " << length << std::endl;
+		#endif
 
 		std::stringstream ss(expression);
-		std::string operation;
+		char operation;
 		int operand;
 		int k = 0;
 		ss >> operand;
+		#ifndef RELEASE
+		std::cout << "parsing string" << std::endl << operand << std::endl;
+		#endif
 		ans[k][0].insert(operand);
 		while (!ss.eof()) {
-			ss >> operation;
-			switch (operation[0]) {
+			do {
+				ss >> operation;
+			} while (operation == ' ');
+			#ifndef RELEASE
+			std::cout << operation << std::endl;
+			#endif
+			switch (operation) {
 				case '+' : op[k] = add; break;
 				case '-' : op[k] = subtract; break;
 				case '*' : op[k] = multiply; break;
@@ -103,34 +127,53 @@ int main() {
 				default  : op[k] = bit_or; break;
 			}
 			ss >> operand;
+			#ifndef RELEASE
+			std::cout << operand << std::endl;
+			#endif
 			ans[++k][0].insert(operand);
 		}
-		assert(k + 1 == length);
+		// assert(k + 1 == length);
 
 		for (int l = 1; l < length; ++l) {
 			for (int m = 0; m < length - l; ++m) {
 				int n = m + l;
-				for (int j = m; j < n; ++j)
-					ans[m][n-m] = op[j](ans[m][j-m], ans[j+1][n-j-1]);
+				for (int j = m; j < n; ++j) {
+					std::unordered_set<int> temp = op[j](ans[m][j-m], ans[j+1][n-j-1]);
+					ans[m][n-m].insert(temp.begin(), temp.end());
+					#ifndef RELEASE
+					std::cout << "ans[" << m << "][" << n << "] = {";
+                    for (auto it = ans[m][n-m].begin(); it != ans[m][n-m].end(); ++it)
+						std::cout << " " << *it;
+					std::cout << " }" << std::endl;
+					#endif
+				}
 			}
 		}
+
+		#ifdef RELEASE
 		msgpack::pack(sbuf, ans[0][length-1].size());
+		#else
+		std::cout << "output = " << ans[0][length-1].size() << std::endl;
+		#endif
 
 		for (int j = 0; j < length; ++j)
 			delete[] ans[j];
 		delete[] ans;
 		delete[] op;
+
+	#ifdef RELEASE
 	}
-	assert(off == len);
+	// assert(off == len);
 
 	std::fstream os("output.txt", std::ios::out | std::ios::binary | std::ios::trunc);
-	assert(os.is_open());
+	// assert(os.is_open());
 
 	os.write(sbuf.data(), sbuf.size());
-	assert(os.good());
+	// assert(os.good());
 	os.close();
 
 	delete[] data;
+	#endif
 	return 0;
 }
 
