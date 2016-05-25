@@ -11,13 +11,13 @@
 #include <sys/stat.h>
 #include <unordered_set>
 
-typedef int(*fp)(int, int);
+typedef std::unordered_set<int>(*fp)(std::unordered_set<int>, std::unordered_set<int>);
 inline int operand_count(std::string);
-int add(int, int);
-int subtract(int, int);
-int multiply(int, int);
-int bit_and(int, int);
-int bit_or(int, int);
+std::unordered_set<int> add(std::unordered_set<int>, std::unordered_set<int>);
+std::unordered_set<int> subtract(std::unordered_set<int>, std::unordered_set<int>);
+std::unordered_set<int> multiply(std::unordered_set<int>, std::unordered_set<int>);
+std::unordered_set<int> bit_and(std::unordered_set<int>, std::unordered_set<int>);
+std::unordered_set<int> bit_or(std::unordered_set<int>, std::unordered_set<int>);
 
 int main() {
 	std::fstream is("input.txt", std::ios::in | std::ios::binary);
@@ -107,12 +107,19 @@ int main() {
 		}
 		assert(k + 1 == length);
 
+		for (int l = 1; l < length; ++l) {
+			for (int m = 0; m < length - l; ++m) {
+				int n = m + l;
+				for (int j = m; j < n; ++j)
+					ans[m][n-m] = op[j](ans[m][j-m], ans[j+1][n-j-1]);
+			}
+		}
+		msgpack::pack(sbuf, ans[0][length-1].size());
+
 		for (int j = 0; j < length; ++j)
 			delete[] ans[j];
 		delete[] ans;
 		delete[] op;
-
-		msgpack::pack(sbuf, 86400);
 	}
 	assert(off == len);
 
@@ -135,22 +142,42 @@ inline int operand_count(std::string str) {
 	return count + 1;
 }
 
-int add(int a, int b) {
-	return a + b;
+std::unordered_set<int> add(std::unordered_set<int> a, std::unordered_set<int> b) {
+	std::unordered_set<int> c;
+	for (auto i = a.begin(); i != a.end(); ++i)
+		for (auto j = b.begin(); j != b.end(); ++j)
+			c.insert(*i + *j);
+	return c;
 }
 
-int subtract(int a, int b) {
-	return a - b;
+std::unordered_set<int> subtract(std::unordered_set<int> a, std::unordered_set<int> b) {
+	std::unordered_set<int> c;
+	for (auto i = a.begin(); i != a.end(); ++i)
+		for (auto j = b.begin(); j != b.end(); ++j)
+			c.insert(*i - *j);
+	return c;
 }
 
-int multiply(int a, int b) {
-	return a * b;
+std::unordered_set<int> multiply(std::unordered_set<int> a, std::unordered_set<int> b) {
+	std::unordered_set<int> c;
+	for (auto i = a.begin(); i != a.end(); ++i)
+		for (auto j = b.begin(); j != b.end(); ++j)
+			c.insert(*i * *j);
+	return c;
 }
 
-int bit_and(int a, int b) {
-	return a & b;
+std::unordered_set<int> bit_and(std::unordered_set<int> a, std::unordered_set<int> b) {
+	std::unordered_set<int> c;
+	for (auto i = a.begin(); i != a.end(); ++i)
+		for (auto j = b.begin(); j != b.end(); ++j)
+			c.insert(*i & *j);
+	return c;
 }
 
-int bit_or(int a, int b) {
-	return a | b;
+std::unordered_set<int> bit_or(std::unordered_set<int> a, std::unordered_set<int> b) {
+	std::unordered_set<int> c;
+	for (auto i = a.begin(); i != a.end(); ++i)
+		for (auto j = b.begin(); j != b.end(); ++j)
+			c.insert(*i | *j);
+	return c;
 }
