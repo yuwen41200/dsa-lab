@@ -90,8 +90,8 @@ int main() {
 		#else
 		// std::string expression = "1 + 3 * 4";
 		// std::string expression = "3 + 4 * 1";
-		// std::string expression = "1 +3 *  4";
-		std::string expression = "1+2-3*4&5|6&7*8-9+10";
+		std::string expression = "1 +3 *  4   ";
+		// std::string expression = "1+2-3*4&5|6&7*8-9+10";
 		#endif
 
 		int length = operand_count(expression);
@@ -116,6 +116,8 @@ int main() {
 			do {
 				ss >> operation;
 			} while (operation == ' ');
+			if (ss.eof())
+				break;
 			#ifndef RELEASE
 			std::cout << operation << std::endl;
 			#endif
