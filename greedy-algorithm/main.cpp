@@ -31,8 +31,8 @@ int main() {
 			fscanf(input, "%d %d", &position, &radius);
 			if (radius <= width / 2.0)
 				continue;
-			double projection = sqrt(pow(radius, 2) - pow(width / 2.0, 2));
-			if (position - projection >= length)
+			double projection = sqrt(radius * radius - (width / 2.0) * (width / 2.0));
+			if (position - projection >= length || position + projection <= 0)
 				continue;
 			range[valid++] = std::make_pair(position - projection, position + projection);
 		}
@@ -66,8 +66,10 @@ int main() {
 }
 
 int compare(const void *a, const void *b) {
-	if (((Range*) a)->second == ((Range*) b)->second)
-		return (int) (((Range*) a)->first - ((Range*) b)->first);
+	if (((Range*) b)->second > ((Range*) a)->second)
+		return 1;
+	else if (((Range*) b)->second < ((Range*) a)->second)
+		return -1;
 	else
-		return (int) (((Range*) b)->second - ((Range*) a)->second);
+		return 0;
 }
